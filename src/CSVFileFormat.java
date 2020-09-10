@@ -4,42 +4,24 @@ import java.util.ArrayList;
 public class CSVFileFormat {
     private static String readFilePath = "C:\\Users\\User\\Desktop\\労働者名簿_固定長.txt";
     private static String readFileFormat = "C:\\Users\\User\\Desktop\\file_layout.txt";
-    private static String writeFilePath = "C:\\Users\\User\\Desktop\\new.csv";
-    private static String readWorkerList;
-    private static String readWorkerFormat;
+    private static String writeFilePath = "C:\\Users\\User\\Desktop\\労働者名簿_固定長_CSV.csv";
     private static ArrayList<Integer> formatNumber;
-    private static ArrayList<String> employeeNo, employeeName, gender, birthday, enterDate, phoneNo, handPhone, healthInsuranceNo, nenkin, eInsuranceNo;
+    private static StringBuilder stringBuilder;
+    private static int layout_format_start = 0;
+    private static int layout_format_end = 0;
+    private static Boolean initial = false;
+
 
     public static void main(String[] args) {
-        employeeNo = new ArrayList<String>();
-        employeeName = new ArrayList<String>();
+        //幅広いArrayList作成する
         formatNumber = new ArrayList<Integer>();
-        gender = new ArrayList<String>();
-        birthday = new ArrayList<String>();
-        enterDate = new ArrayList<String>();
-        phoneNo = new ArrayList<String>();
-        handPhone = new ArrayList<String>();
-        healthInsuranceNo = new ArrayList<String>();
-        nenkin = new ArrayList<String>();
-        eInsuranceNo = new ArrayList<String>();
         //file_layoutを読み込んで幅広いをArrayListとしてもらう
-        readWorkerFormat = readFile(readFileFormat, 2);
-        //幅広いArrayListの改行を消す
-        String replaceNewLine = readWorkerFormat.replaceAll("[\r\n]+$", "");
-        //幅広いArrayListのコンマを消す
-        String[] split_num = replaceNewLine.split(",", 0);
-        //幅広いArrayListにデータを入れる
-        for (int i = 0; i < split_num.length; i++) {
-            formatNumber.add(Integer.parseInt(split_num[i]));
-        }
+        readFile(readFileFormat, 2);
         //労働者名簿_固定長.txtを読み込んで幅広いArrayListを基づいて各列データを設定する
-        readWorkerList = readFile(readFilePath, 1);
-        //CSVファイルを出力する
-        writeCSVFile();
-
+        readFile(readFilePath, 1);
     }
 
-    private static void writeCSVFile() {
+    private static void writeCSVFile(String substring) {
         try {
             //Fileクラスのオブジェクトを作成する
             File writeFile = new File(writeFilePath);
@@ -47,41 +29,15 @@ public class CSVFileFormat {
             PrintWriter printWriter = new PrintWriter(writeFile);
             //StringBuilderクラスのオブジェクトを作成する
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < eInsuranceNo.size(); i++) {
-                //各列データを書き込む
-                sb.append(employeeNo.get(i));
-                sb.append(",");
-                sb.append(employeeName.get(i));
-                sb.append(",");
-                sb.append(gender.get(i));
-                sb.append(",");
-                sb.append(birthday.get(i));
-                sb.append(",");
-                sb.append(enterDate.get(i));
-                sb.append(",");
-                sb.append(phoneNo.get(i));
-                sb.append(",");
-                sb.append(handPhone.get(i));
-                sb.append(",");
-                sb.append(healthInsuranceNo.get(i));
-                sb.append(",");
-                sb.append(nenkin.get(i));
-                sb.append(",");
-                sb.append(eInsuranceNo.get(i));
-                sb.append("\r\n");
-            }
-            printWriter.write(sb.toString());
+            printWriter.write(substring);
             printWriter.close();
         } catch (IOException e) {
             System.out.println(e);
         }
-
-
     }
 
-    private static String readFile(String readFilePath, int type) {
-        //StringBuilderクラスのオブジェクトを作成する
-        StringBuilder stringBuilder = new StringBuilder();
+    private static void readFile(String readFilePath, int type) {
+        stringBuilder = new StringBuilder();
         try {
             //Fileクラスのオブジェクトを作成する
             File read_file = new File(readFilePath);
@@ -93,46 +49,28 @@ public class CSVFileFormat {
 
             while ((line = bufferedReader.readLine()) != null) {
                 if (type == 1) {
-                    //幅広いArrayListを基づいて各列データを設定する
-                    int layout_format_first = 0;
-                    int layout_format_second = 0;
-                    stringBuilder.append(line);
-                    layout_format_second = layout_format_first + formatNumber.get(0);
-                    employeeNo.add(line.substring(0, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(1);
-                    employeeName.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(2);
-                    gender.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(3);
-                    birthday.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(4);
-                    enterDate.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(5);
-                    phoneNo.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(6);
-                    handPhone.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(7);
-                    healthInsuranceNo.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(8);
-                    nenkin.add(line.substring(layout_format_first, layout_format_second));
-                    layout_format_first = layout_format_second;
-                    layout_format_second = layout_format_first + formatNumber.get(9);
-                    eInsuranceNo.add(line.substring(layout_format_first, layout_format_second));
+                    //幅広いArrayListを基づいてデータの幅広いを分割する
+                    for (int i = 0; i < formatNumber.size(); i++) {
+                        if (i == 0)
+                            initial = true;
+                        else
+                            initial = false;
+                        //データの幅広いを分割する機能を呼ぶ
+                        stringBuilder.append(splitData(formatNumber.get(i), line, initial)).append(",");
+                    }
+                    //分割したデータをCSVFileで一行ずつ書き込み
+                    writeCSVFile(stringBuilder.toString());
                     stringBuilder.append(System.lineSeparator());
                 }
                 if (type == 2) {
                     //file_layoutを読み込んで幅広いをArrayListとしてもらう
                     stringBuilder.append(line);
-                    stringBuilder.append(System.lineSeparator());
-
+                    //幅広いArrayListのコンマを消す
+                    String[] split_num = stringBuilder.toString().split(",", 0);
+                    //幅広いArrayListにデータを入れる
+                    for (int i = 0; i < split_num.length; i++) {
+                        formatNumber.add(Integer.parseInt(split_num[i]));
+                    }
                 }
             }
         }
@@ -144,6 +82,20 @@ public class CSVFileFormat {
         catch (IOException e) {
             System.out.println(e);
         }
-        return stringBuilder.toString();
+    }
+
+    //データの幅広いを分割する機能
+    private static String splitData(int formatLayout, String data, Boolean initial) {
+
+        if (initial == true) {
+            layout_format_start = 0;
+            layout_format_end = formatLayout;
+        } else {
+            layout_format_start = layout_format_end;
+            layout_format_end = layout_format_start + formatLayout;
+        }
+        //幅広いArrayListを基づいてデータの幅広いを分割する
+        String splitData = data.substring(layout_format_start, layout_format_end);
+        return splitData;
     }
 }
