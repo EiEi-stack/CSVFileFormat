@@ -10,10 +10,10 @@ public class CSVFileFormat {
         //file_layoutを読み込んで桁数をArrayListとしてもらう
         readFileLayout(READ_FILE_FORMAT);
         //労働者名簿_固定長.txtを読み込んで桁数ArrayListを基づいて各列データを設定する
-        readFileDisplayOutput(READ_FILE_PATH);
+        readFileWriteOutput(READ_FILE_PATH);
     }
 
-    private static void readFileDisplayOutput(String readFilePath) {
+    private static void readFileWriteOutput(String readFilePath) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
             //Fileクラスのオブジェクトを作成する
