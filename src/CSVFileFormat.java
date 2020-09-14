@@ -1,77 +1,63 @@
 import java.io.*;
-import java.util.ArrayList;
 
 public class CSVFileFormat {
-    private static String readFilePath = "C:\\Users\\User\\Desktop\\労働者名簿_固定長.txt";
-    private static String readFileFormat = "C:\\Users\\User\\Desktop\\file_layout.txt";
-    private static String writeFilePath = "C:\\Users\\User\\Desktop\\労働者名簿_固定長_CSV.csv";
-    private static ArrayList<Integer> formatNumber;
-    private static StringBuilder stringBuilder;
-    private static int layout_format_start = 0;
-    private static int layout_format_end = 0;
-    private static Boolean initial = false;
-
+    private static String READ_FILE_PATH = "C:\\Users\\User\\Desktop\\労働者名簿_固定長.txt";
+    private static String READ_FILE_FORMAT = "C:\\Users\\User\\Desktop\\file_layout.txt";
+    private static String WRITE_FILE_PATH = "C:\\Users\\User\\Desktop\\労働者名簿_固定長_CSV.csv";
+    private static String[] layoutDimension;
 
     public static void main(String[] args) {
-        //幅広いArrayList作成する
-        formatNumber = new ArrayList<Integer>();
-        //file_layoutを読み込んで幅広いをArrayListとしてもらう
-        readFile(readFileFormat, 2);
-        //労働者名簿_固定長.txtを読み込んで幅広いArrayListを基づいて各列データを設定する
-        readFile(readFilePath, 1);
+        //file_layoutを読み込んで桁数をArrayListとしてもらう
+        readFileLayout(READ_FILE_FORMAT);
+        //労働者名簿_固定長.txtを読み込んで桁数ArrayListを基づいて各列データを設定する
+        readFileDisplayOutput(READ_FILE_PATH);
     }
 
-    private static void writeCSVFile(String substring) {
+    private static void readFileDisplayOutput(String readFilePath) {
+        StringBuilder stringBuilder = new StringBuilder();
         try {
             //Fileクラスのオブジェクトを作成する
-            File writeFile = new File(writeFilePath);
-            //PrintWriterクラスのオブジェクトを作成する
-            PrintWriter printWriter = new PrintWriter(writeFile);
-            //StringBuilderクラスのオブジェクトを作成する
-            StringBuilder sb = new StringBuilder();
-            printWriter.write(substring);
-            printWriter.close();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-
-    private static void readFile(String readFilePath, int type) {
-        stringBuilder = new StringBuilder();
-        try {
-            //Fileクラスのオブジェクトを作成する
-            File read_file = new File(readFilePath);
+            File readFile = new File(readFilePath);
             String line = null;
             //FileReaderクラスのオブジェクトを作成する
-            FileReader fileReader = new FileReader(read_file);
+            FileReader fileReader = new FileReader(readFile);
             //BufferedReaderクラスのオブジェクトを作成する
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
 
             while ((line = bufferedReader.readLine()) != null) {
-                if (type == 1) {
-                    //幅広いArrayListを基づいてデータの幅広いを分割する
-                    for (int i = 0; i < formatNumber.size(); i++) {
-                        if (i == 0)
-                            initial = true;
-                        else
-                            initial = false;
-                        //データの幅広いを分割する機能を呼ぶ
-                        stringBuilder.append(splitData(formatNumber.get(i), line, initial)).append(",");
+
+                int layoutFormatStart = 0;
+                int layoutFormatEnd = 0;
+                //桁数ArrayListを基づいてデータの桁数を分割する
+                for (int i = 0; i < layoutDimension.length; i++) {
+                    //データの桁数を分割する機能を呼ぶ
+                    if (i == 0) {
+                        layoutFormatStart = 0;
+                        layoutFormatEnd = Integer.parseInt(layoutDimension[i]);
+                    } else {
+                        layoutFormatStart = layoutFormatEnd;
+                        int dimensionNumber = Integer.parseInt(layoutDimension[i]);
+                        layoutFormatEnd = layoutFormatStart + dimensionNumber;
                     }
-                    //分割したデータをCSVFileで一行ずつ書き込み
-                    writeCSVFile(stringBuilder.toString());
-                    stringBuilder.append(System.lineSeparator());
+                    String splitData = line.substring(layoutFormatStart, layoutFormatEnd);
+
+                    stringBuilder.append(splitData).append(",");
                 }
-                if (type == 2) {
-                    //file_layoutを読み込んで幅広いをArrayListとしてもらう
-                    stringBuilder.append(line);
-                    //幅広いArrayListのコンマを消す
-                    String[] split_num = stringBuilder.toString().split(",", 0);
-                    //幅広いArrayListにデータを入れる
-                    for (int i = 0; i < split_num.length; i++) {
-                        formatNumber.add(Integer.parseInt(split_num[i]));
-                    }
-                }
+                stringBuilder.append(System.lineSeparator());
+
+            }
+            //bufferReaderを使ったあと閉じる
+            bufferedReader.close();
+            //分割したデータをCSVFileで一行ずつ書き込み
+            try {
+                //Fileクラスのオブジェクトを作成する
+                File writeFile = new File(WRITE_FILE_PATH);
+                //PrintWriterクラスのオブジェクトを作成する
+                PrintWriter printWriter = new PrintWriter(writeFile);
+                printWriter.write(stringBuilder.toString());
+                printWriter.close();
+            } catch (IOException e) {
+                System.out.println(e);
             }
         }
         //FileReaderクラスのオブジェクトを作成の例外
@@ -84,18 +70,30 @@ public class CSVFileFormat {
         }
     }
 
-    //データの幅広いを分割する機能
-    private static String splitData(int formatLayout, String data, Boolean initial) {
+    private static void readFileLayout(String readFilePath) {
+        try {
+            //Fileクラスのオブジェクトを作成する
+            File readFile = new File(readFilePath);
+            String line = null;
+            //FileReaderクラスのオブジェクトを作成する
+            FileReader fileReader = new FileReader(readFile);
+            //BufferedReaderクラスのオブジェクトを作成する
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-        if (initial == true) {
-            layout_format_start = 0;
-            layout_format_end = formatLayout;
-        } else {
-            layout_format_start = layout_format_end;
-            layout_format_end = layout_format_start + formatLayout;
+            while ((line = bufferedReader.readLine()) != null) {
+                //桁数ArrayListのコンマを消す
+                layoutDimension = line.split(",", 0);
+            }
+          //bufferReaderを使ったあと閉じる
+            bufferedReader.close();
         }
-        //幅広いArrayListを基づいてデータの幅広いを分割する
-        String splitData = data.substring(layout_format_start, layout_format_end);
-        return splitData;
+        //FileReaderクラスのオブジェクトを作成の例外
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        //readメソッドの例外
+        catch (IOException e) {
+            System.out.println(e);
+        }
     }
 }
