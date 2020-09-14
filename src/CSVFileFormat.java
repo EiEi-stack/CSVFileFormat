@@ -1,9 +1,9 @@
 import java.io.*;
 
 public class CSVFileFormat {
-    private static String READ_FILE_PATH = "C:\\Users\\User\\Desktop\\労働者名簿_固定長.txt";
-    private static String READ_FILE_FORMAT = "C:\\Users\\User\\Desktop\\file_layout.txt";
-    private static String WRITE_FILE_PATH = "C:\\Users\\User\\Desktop\\労働者名簿_固定長_CSV.csv";
+    private static String READ_FILE_PATH = "C:/Users/User/Desktop/労働者名簿_固定長.txt";
+    private static String READ_FILE_FORMAT = "C:/Users/User/Desktop/file_layout.txt";
+    private static String WRITE_FILE_PATH = "C:/Users/User/Desktop/労働者名簿_固定長_CSV.csv";
     private static String[] layoutDimension;
 
     public static void main(String[] args) {
