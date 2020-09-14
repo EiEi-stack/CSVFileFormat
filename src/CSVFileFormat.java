@@ -13,8 +13,7 @@ public class CSVFileFormat {
         readFileWriteOutput(READ_FILE_PATH);
     }
 
-    private static void readFileWriteOutput(String readFilePath) {
-        StringBuilder stringBuilder = new StringBuilder();
+    private static void readFileLayout(String readFilePath) {
         try {
             //Fileクラスのオブジェクトを作成する
             File readFile = new File(readFilePath);
@@ -22,10 +21,36 @@ public class CSVFileFormat {
             //FileReaderクラスのオブジェクトを作成する
             FileReader fileReader = new FileReader(readFile);
             //BufferedReaderクラスのオブジェクトを作成する
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
             while ((line = bufferedReader.readLine()) != null) {
+                //桁数を習得する
+                layoutDimension = line.split(",", 0);
+            }
+            //bufferReaderを使ったあと閉じる
+            bufferedReader.close();
+        }
+        //FileReaderクラスのオブジェクトを作成の例外
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        //readメソッドの例外
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
 
+    private static void readFileWriteOutput(String readFilePath) {
+        try {
+            //Fileクラスのオブジェクトを作成する
+            File readFile = new File(readFilePath);
+            String line = null;
+            //FileReaderクラスのオブジェクトを作成する
+            FileReader fileReader = new FileReader(readFile);
+            //BufferedReaderクラスのオブジェクトを作成する
+            BufferedReader bufferReader = new BufferedReader(fileReader);
+            //StringBuilderクラスのオブジェクトを作成する
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((line = bufferReader.readLine()) != null) {
                 int layoutFormatStart = 0;
                 int layoutFormatEnd = 0;
                 //桁数ArrayListを基づいてデータの桁数を分割する
@@ -40,52 +65,23 @@ public class CSVFileFormat {
                         layoutFormatEnd = layoutFormatStart + dimensionNumber;
                     }
                     String splitData = line.substring(layoutFormatStart, layoutFormatEnd);
-
                     stringBuilder.append(splitData).append(",");
+                    //分割したデータをCSVFileで一行ずつ書き込み
+                    try {
+                        //Fileクラスのオブジェクトを作成する
+                        File writeFile = new File(WRITE_FILE_PATH);
+                        //PrintWriterクラスのオブジェクトを作成する
+                        PrintWriter printWriter = new PrintWriter(writeFile);
+                        printWriter.write(stringBuilder.toString());
+                        printWriter.close();
+                    } catch (IOException e) {
+                        System.out.println(e);
+                    }
                 }
                 stringBuilder.append(System.lineSeparator());
-
             }
             //bufferReaderを使ったあと閉じる
-            bufferedReader.close();
-            //分割したデータをCSVFileで一行ずつ書き込み
-            try {
-                //Fileクラスのオブジェクトを作成する
-                File writeFile = new File(WRITE_FILE_PATH);
-                //PrintWriterクラスのオブジェクトを作成する
-                PrintWriter printWriter = new PrintWriter(writeFile);
-                printWriter.write(stringBuilder.toString());
-                printWriter.close();
-            } catch (IOException e) {
-                System.out.println(e);
-            }
-        }
-        //FileReaderクラスのオブジェクトを作成の例外
-        catch (FileNotFoundException e) {
-            System.out.println(e);
-        }
-        //readメソッドの例外
-        catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-
-    private static void readFileLayout(String readFilePath) {
-        try {
-            //Fileクラスのオブジェクトを作成する
-            File readFile = new File(readFilePath);
-            String line = null;
-            //FileReaderクラスのオブジェクトを作成する
-            FileReader fileReader = new FileReader(readFile);
-            //BufferedReaderクラスのオブジェクトを作成する
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-            while ((line = bufferedReader.readLine()) != null) {
-                //桁数ArrayListのコンマを消す
-                layoutDimension = line.split(",", 0);
-            }
-          //bufferReaderを使ったあと閉じる
-            bufferedReader.close();
+            bufferReader.close();
         }
         //FileReaderクラスのオブジェクトを作成の例外
         catch (FileNotFoundException e) {
